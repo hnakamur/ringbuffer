@@ -138,3 +138,29 @@ func TestRemove(t *testing.T) {
 		t.Errorf("len: exptected 0, got %d", buf.Len())
 	}
 }
+
+func TestSmalltestPow2(t *testing.T) {
+	tests := []struct{
+		n int
+		expected int
+	}{
+		{0, 1},
+		{1, 1},
+		{2, 2},
+		{3, 4},
+		{4, 4},
+		{5, 8},
+		{6, 8},
+		{7, 8},
+		{8, 8},
+		{12, 16},
+		{1025, 2048},
+	}
+	for _, test := range tests {
+		actual := smallestPow2(test.n)
+		if actual != test.expected {
+			t.Errorf("got %d, expected %d for %d", actual, test.expected,
+				test.n)
+		}
+	}
+}
