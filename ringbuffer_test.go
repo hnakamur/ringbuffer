@@ -4,13 +4,6 @@ import (
 	"testing"
 )
 
-func TestNewRingBuffer(t *testing.T) {
-	buf := NewRingBuffer(3)
-	if buf.Capacity() != 3 {
-		t.Errorf("capacity: exptected 3, got %d", buf.Capacity())
-	}
-}
-
 func TestAdd(t *testing.T) {
 	buf := NewRingBuffer(3)
 
@@ -136,31 +129,5 @@ func TestRemove(t *testing.T) {
 
 	if buf.Len() != 0 {
 		t.Errorf("len: exptected 0, got %d", buf.Len())
-	}
-}
-
-func TestSmalltestPow2(t *testing.T) {
-	tests := []struct{
-		n int
-		expected int
-	}{
-		{0, 1},
-		{1, 1},
-		{2, 2},
-		{3, 4},
-		{4, 4},
-		{5, 8},
-		{6, 8},
-		{7, 8},
-		{8, 8},
-		{12, 16},
-		{1025, 2048},
-	}
-	for _, test := range tests {
-		actual := smallestPow2(test.n)
-		if actual != test.expected {
-			t.Errorf("got %d, expected %d for %d", actual, test.expected,
-				test.n)
-		}
 	}
 }

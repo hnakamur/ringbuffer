@@ -5,53 +5,53 @@ import (
 )
 
 type RingBuffer struct {
-	buffer   []interface{}
-	capacity int
-	mask     int
-	start    int
-	end      int
+	buffer []interface{}
+	start  int
+	end    int
 }
 
-func NewRingBuffer(capacity int) *RingBuffer {
-	bufSize := smallestPow2(capacity)
+func NewRingBuffer(size int) *RingBuffer {
 	return &RingBuffer{
-		buffer:   make([]interface{}, bufSize),
-		capacity: capacity,
-		mask:     bufSize - 1,
-		start:    0,
-		end:      0,
+		buffer: make([]interface{}, size+1),
+		start:  0,
+		end:    0,
 	}
 }
 
-func (b *RingBuffer) Capacity() int {
-	return b.capacity
+func (b *RingBuffer) Full() bool {
+	return b.inc(b.end) == b.start
+}
+
+func (b *RingBuffer) Empty() bool {
+	return b.end == b.start
 }
 
 func (b *RingBuffer) Len() int {
-	return b.end - b.start
+	l := b.end - b.start
+	if l < 0 {
+		l += len(b.buffer)
+	}
+	return l
+}
+
+func (b *RingBuffer) inc(index int) int {
+	return (index + 1) % len(b.buffer)
 }
 
 func (b *RingBuffer) Add(item interface{}) error {
-	if b.Len() >= b.capacity {
+	if b.Full() {
 		return errors.New("buffer full")
 	}
-	b.buffer[b.end&b.mask] = item
-	b.end++
+	b.buffer[b.end] = item
+	b.end = b.inc(b.end)
 	return nil
 }
 
 func (b *RingBuffer) Remove() (interface{}, error) {
-	if b.Len() <= 0 {
+	if b.Empty() {
 		return nil, errors.New("buffer empty")
 	}
-	item := b.buffer[b.start&b.mask]
-	b.start++
+	item := b.buffer[b.start]
+	b.start = b.inc(b.start)
 	return item, nil
-}
-
-func smallestPow2(n int) int {
-	var x int
-	for x = 1; x < n; x <<= 1 {
-	}
-	return x
 }
